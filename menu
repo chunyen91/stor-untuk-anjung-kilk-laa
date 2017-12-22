@@ -1,0 +1,103 @@
+	echo ""
+	echo -e "\e[1;33;31m============== SCRIPT BY BONIS YANUAR RAMADAN ==============\e[0m"
+	echo -e "\e[1;33;31m|                                                          |"
+	echo -e "\e[1;33;31m|\e[1;33;34m" "Apa Yang Akan Anda Lakukan ?\e[1;33;31m                             |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m " " 1) Melihat User Login\e[1;33;31m                                 |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m"  " 2) Melihat Pemakaian Ram\e[1;33;31m                              |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m  " " 3) Melihat Daftar Akun Dan Expired\e[1;33;31m                    |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m ""   4) Melihat Pemakain Bandwith\e[1;33;31m                          |\e[0m"| lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m""    5) Melihat Port Aktif\e[1;33;31m                                 |\e[0m"  | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m ""   6) Memperpanjang Masa Aktif SSH/VPN\e[1;33;31m                   |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m  ""  7) Edit Port Dropbear\e[1;33;31m                                 |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m ""   8) Edit Port Openvpn\e[1;33;31m                                  |\e[0m"| lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m ""   9) Edit Banner SSH\e[1;33;31m                                    |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m  "" 10) Kill Multi Login\e[1;33;31m                                   |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m "  "11) Membuat Akun SSH/Openvpn\e[1;33;31m                           |\e[0m"| lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m "  "12) Speedtest Server\e[1;33;31m                                   |\e[0m"| lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m " " 13) Bench Network\e[1;33;31m                                      |\e[0m" | lolcat
+	echo -e "\e[1;33;31m|\e[1;33;35m  "" 14) Ganti Password VPS\e[1;33;31m                                 |"
+	echo -e "\e[1;33;31m|\e[1;33;35m""   15) Restart All Service\e[1;33;31m                                |"
+	echo -e "\e[1;33;31m|\e[1;33;35m""   16) UPDATE\e[1;33;31m     | lolcat                                        |"
+	echo -e "\e[1;33;31m|\e[1;33;35m  "" 17) Restart VPS\e[1;33;31m     | lolcat                                   |"
+	echo -e "\e[1;33;31m|                                             | lolcat             |"
+	echo -e "\e[1;33;31m|\e[1;33;34m""  x (exit)\e[1;33;31m                                                |\e[0m"
+	echo -e "\e[1;33;31m|                                                          |"
+	echo -e "\e[1;33;31m==================== TERIMA KASIH ==========================\e[0m"
+	echo ""
+	while [[ $MENU != "1" && $MENU != "2" && $MENU != "3" && $MENU != "4" && $MENU != "5" && $MENU != "6" && $MENU != "7" && $MENU != "8" && $MENU != "9" && $MENU != "10" && $MENU != "11" && $MENU != "12" && $MENU != "13" && $MENU != "14" && $MENU != "15" && $MENU != "16"&& $MENU != "17" && $MENU != "x" ]]; do
+		read -p "Silahkan Pilih Nomornya BOSQU: " -e -i 1 MENU
+	done
+case $MENU in
+		1)
+		cd
+		login
+		;;
+		2)
+		cd
+		memori
+		;;
+		3)
+		cd
+		akun
+		;;
+		4)
+		cd
+		vnstat
+		;;
+		5)
+		cd
+		netstat -nlpt
+		;;
+		6)
+		cd
+		renew
+		;;
+		7)
+		cd
+		nano /etc/default/dropbear
+		;;
+		8)
+		cd
+		nano /etc/openvpn/server.conf
+		;;
+		9)
+		cd
+		nano /etc/bannerssh.net
+		;;
+		10)
+		cd
+		tendang 2
+		;;
+		x)
+		cd
+		exit
+		;;
+		11)
+		cd
+		usernew
+		;;
+		12)
+		cd
+		speedtest
+		;;
+		13)
+		cd
+		bench
+		;;
+		14)
+		cd
+		passwd
+		;;
+		15)
+		cd
+		restall
+		;;
+		16)
+		cd
+		apt-get update && apt-get upgrade
+		;;
+		17)
+		cd
+		reboot
+		;;
+	esac
