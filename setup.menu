@@ -1,0 +1,1216 @@
+#!/bin/bash
+myip=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0' | head -n1`;
+myint=`ifconfig | grep -B1 "inet addr:$myip" | head -n1 | awk '{print $1}'`;
+
+function create_user() {
+	useradd -M $uname
+	echo "$uname:$pass" | chpasswd
+	usermod -e $expdate $uname
+
+	myip=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0' | head -n1`;
+	myip2="s/xxxxxxxxx/$myip/g";	
+	wget -qO /tmp/client.ovpn "https://raw.githubusercontent.com/rasta-team/MyVPS/master/1194-client.ovpn"
+	sed -i 's/remote xxxxxxxxx 1194/remote xxxxxxxxx 443/g' /tmp/client.ovpn
+	sed -i $myip2 /tmp/client.ovpn
+	echo ""
+	echo "========================="
+	echo "Host IP : $myip"
+	echo "Port    : 443/22/80"
+	echo "Squid   : 8080/3128"
+	echo "========================="
+echo  "Script Powered by JackBlaCkHat"
+	echo "========================="
+}
+
+function renew_user() {
+	echo "New expiration date for $uname: $expdate...";
+	usermod -e $expdate $uname
+}
+
+function delete_user(){
+	userdel $uname
+}
+
+function expired_users(){
+	cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+	totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+	for((i=1; i<=$totalaccounts; i++ )); do
+		tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+		username=`echo $tuserval | cut -f1 -d:`
+		userexp=`echo $tuserval | cut -f2 -d:`
+		userexpireinseconds=$(( $userexp * 86400 ))
+		todaystime=`date +%s`
+		if [ $userexpireinseconds -lt $todaystime ] ; then
+			echo $username
+		fi
+	done
+	rm /tmp/expirelist.txt
+}
+
+function not_expired_users(){
+    cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+    totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+    for((i=1; i<=$totalaccounts; i++ )); do
+        tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+        username=`echo $tuserval | cut -f1 -d:`
+        userexp=`echo $tuserval | cut -f2 -d:`
+        userexpireinseconds=$(( $userexp * 86400 ))
+        todaystime=`date +%s`
+        if [ $userexpireinseconds -gt $todaystime ] ; then
+            echo $username
+        fi
+    done
+	rm /tmp/expirelist.txt
+}
+
+function used_data(){
+	myip=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0' | head -n1`
+	myint=`ifconfig | grep -B1 "inet addr:$myip" | head -n1 | awk '{print $1}'`
+	ifconfig $myint | grep "RX bytes" | sed -e 's/ *RX [a-z:0-9]*/Received: /g' | sed -e 's/TX [a-z:0-9]*/\nTransfered: /g'
+}
+
+	clear
+cho -e "\e[031;1m#******************************************************************"
+echo -e "\e[96m# Program: @OrangKuatSabahanTerkini"
+echo -e "\e[96m# Website: mastavps.tk"            
+echo -e "\e[96m# Developer: KeningauGroup"
+echo -e "\e[96m# Nickname: @OrangKuatSabahanTerkini"                                  
+echo -e "\e[96m# TeLegram @OrangKuatSabahanTerkini"
+echo -e "\e[96m# ChanneL @Premium Servis"
+echo -e "\e[96m# Date builder: 23.8.2017"
+echo -e "\e[96mm# Last ChecKer: 26.8.2017"                                        
+echo -e "\e[96m# ******************************************************************"
+	echo " Now You Can Start Using Script By @OrangKuatSabahanTerkini!" 
+    echo "----------------------------------------------------"
+ 	echo -e "\e[38;5;198m [1]\e[40;38;5;154m Add user/OpenVPN\e[0m \e[38;5;198m 🔘" | locat
+	echo -e "\e[38;5;198m [2]\e[40;38;5;154m Generate Acc SSH/OpenVPN\e[0m \e[38;5;198m 🔘" | locat
+	echo -e "\e[38;5;198m [3]\e[40;38;5;154m Generate Acc Trial\e[0m\e[38;5;198m 🔘" | locat
+	echo -e "\e[38;5;198m [4]\e[40;38;5;154m Change Pass SSH/VPN\e[0m\e[38;5;198m 🔘" | locat
+	echo -e "\e[38;5;198m [5]\e[40;38;5;154m Renew User Exp SSH/OpenVPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m [6]\e[40;38;5;154m DeleTe Account SSH/OpenVPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m [7]\e[40;38;5;154m Check Login Dropbear&OpenSSH\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m [8]\e[40;38;5;154m Auto Limit Multi Login\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m [9]\e[40;38;5;154m detail user SSH & OpenVPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[10]\e[40;38;5;154m add account and Expire Date\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[11]\e[40;38;5;154m Delete Account Expire\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[12]\e[40;38;5;154m Disable Account Expire\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[13]\e[40;38;5;154m kill Multi Login\e[0m\e[38;5;198m 🔘" | locat
+	echo -e "\e[38;5;198m[14]\e[40;38;5;154m block Acc User SSH&OpenVPN\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[15]\e[40;38;5;154m Unblock Acc User SSH&OpenVPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[16]\e[40;38;5;154m Check User Kick Autolimit\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[17]\e[40;38;5;154m Check User Has Banned\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[18]\e[40;38;5;154m Add USER PPTP\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[19]\e[40;38;5;154m Delete USER PPTP VPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[20]\e[40;38;5;154m Check Detail User PPTP VPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[21]\e[40;38;5;154m Login PPTP VPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[22]\e[40;38;5;154m Lihat Daftar User PPTP VPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[23]\e[40;38;5;154m Set Auto Reboot \e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[24]\e[40;38;5;154m Speedtest\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[25]\e[40;38;5;154m Memory Usage\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[26]\e[40;38;5;154m Change OpenVPN Port\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[27]\e[40;38;5;154m Change Dropbear Port\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[28]\e[40;38;5;154m Change Squid Port\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[29]\e[40;38;5;154m Restart OpenVPN\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[30]\e[40;38;5;154m Restart Dropbear\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[31]\e[40;38;5;154m Restart Squid\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[32]\e[40;38;5;154m Restart Webmin\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[33]\e[40;38;5;154m Benchmark\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[34]\e[40;38;5;154m Change Pasword VPS\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[35]\e[40;38;5;154m Change Hostname VPS\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[36]\e[40;38;5;154m Reboot Server\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[37]\e[40;38;5;154m Check User DDos\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[38]\e[40;38;5;154m Restart All Service\e[0m\e[38;5;198m🔘" | locat
+  echo -e "\e[38;5;198m[39]\e[40;38;5;154m Attack DDOs\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[38;5;198m[ X ]\e[0m)\e[40;38;5;154m exit\e[0m\e[38;5;198m🔘" | locat
+	echo -e "\e[132;1m===🔘=========🔘===========🔘==========🔘=======\e[0m"  
+  echo -e "\e[31;1mTelegram @OrangKuatSabahanTerkini"	
+  echo -e "\e[132;1m===🔘=========🔘===========🔘==========🔘=======\e[0m"  
+
+  read -p "Masukkan pilihan anda, kemudian tekan tombol ENTER: " option1
+	case $option1 in
+        1)  
+            clear
+	#!/bin/bash
+
+if [[ $USER != 'root' ]]; then
+	echo "Maaf, Anda harus menjalankan ini sebagai root"
+	exit
+fi
+
+MYIP=$(wget -qO- ipv4.icanhazip.com)
+
+#vps="zvur";
+vps="freemiumm OpLoverS"
+
+if [[ $vps = "zvur" ]]; then
+	source="http://freemiumm OpLoverS"
+else
+	source="http://freemiumm OpLoverS"
+fi
+
+# go to root
+cd
+  
+ read -p "Isikan username: " username
+
+egrep "^$username" /etc/passwd >/dev/null
+if [ $? -eq 0 ]; then
+	echo -e "\e[0;33;1mUsername [$username] sudah ada!"
+	exit 1
+else
+	 read -p "Isikan password akun [$username]: " password
+	 read -p "Berapa hari akun [$username] aktif: " AKTIF
+
+	today="$(date +"%Y-%m-%d")"
+	expire=$(date -d "$AKTIF days" +"%Y-%m-%d")
+	useradd -M -N -s /bin/false -e $expire $username
+	echo $username:$password | chpasswd
+
+	echo -e "\e[035;1m-------------------------------------------------"
+	echo -e "\e[033;1mData Login:"
+	echo -e "\e[035;1m-------------------------------------------------"
+    echo -e "\e[035;1m[===============================================]\e[0m"        
+    echo -e "\e[033;1m[[[[ID DAN PASSWORD USER SERTA TARIKH TAMAT]]]]"
+    echo -e "\e[035;1m[===============================================]\e[0m"            
+    echo -e "\e[033;1mUsername: $username"
+    echo -e "\e[033;1mPassword: $password"
+    echo -e "\e[033;1mTarikH TaMaT Exp/d: $(date -d "$AKTIF days" +"%d-%m-%Y")"
+	echo -e "\e[033;1mHost/IP: $MYIP"
+    echo -e "\e[035;1m[===============================================]\e[0m"       
+fi
+
+cd ~/
+rm -f /root/IP
+            ;;
+        2)  
+            clear
+            #!/bin/bash
+
+            IP=$(wget -qO- ipv4.icanhazip.com)
+            read -p "Berapa jumlah account yang akan dibuat: " banyakuser
+            read -p "Masukkan lama masa aktif account(Hari): " aktif
+            today="$(date +"%Y-%m-%d")"
+            expire=$(date -d "$aktif days" +"%Y-%m-%d")
+           
+            echo " "
+            echo "Detail Account"
+            echo "----------------------------------"
+            echo "Host/IP         : $IP"
+            echo "Dropbear Port   : 80, 109, 110, 443"
+            echo "OpenSSH Port    : 22 , 143"
+            echo "Squid Proxy     : 8080, 8000, 3128"
+            echo "OpenVPN Config  : http://$IP:81/client.ovpn"
+            echo "Aktif Sampai    : $(date -d "$aktif days" +"%d-%m-%Y")"
+            echo "----------------------------------"
+            for (( i=1; i <= $banyakuser; i++ ))
+            do
+         	USER=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1`
+        	useradd -M -N -s /bin/false -e $expire $USER
+        	PASS=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1`;
+        	echo $USER:$USER | chpasswd
+	        echo "$i. Username/Password: $USER"
+            done
+
+            echo "----------------------------------"
+            ;;
+        3)	
+            clear
+        
+            #!/bin/bash
+#Script auto create trial user SSH
+#yg akan expired setelah 1 hari
+
+
+
+Login=jack`</dev/urandom tr -dc X-Z0-9 | head -c4`
+hari="1"
+Pass=`</dev/urandom tr -dc a-f0-9 | head -c9`
+
+useradd -e `date -d "$hari days" +"%Y-%m-%d"` -s /bin/false -M $Login
+echo -e "$Pass\n$Pass\n"|passwd $Login &> /dev/null
+echo -e ""
+echo -e "==== Create Trial SSH ====="
+echo -e "Port    : 443 (dropbear)"
+echo -e "Username : $Login"
+echo -e "Password: $Pass\n"
+echo -e "\e[033;1mTarikH TaMaT Exp/d: $(date -d "$AKTIF days" +"%d-%m-%Y")"
+echo -e "==========================="
+echo -e "     Powered by jack    "
+echo -e ""
+			;;	
+        4)
+            clear
+            #!/bin/bash
+           
+            read -p "Masukkan Username Yang Diganti Passwordnya: " username
+            egrep "^$username" /etc/passwd >/dev/null
+            if [ $? -eq 0 ]; then
+            read -p "Masukkan Password baru untuk user $username: " password
+
+            echo "Merubah Password..."
+            sleep 0.5
+            egrep "^$username" /etc/passwd >/dev/null
+            echo -e "$password\n$password" | passwd $username
+            echo " "
+            echo "---------------------------------------"
+            echo -e "Password untuk user ${blue}$username${NC} Sudah berhasil di ganti."
+            echo -e "Password baru untuk user ${blue}$username${NC} adalah ${red}$password${NC}"
+            echo "--------------------------------------"
+            echo " "
+
+            else
+            echo -e "Username ${red}$username${NC} tidak ditemukan di VPS anda"
+            exit 0
+            fi
+            ;;
+            5)
+            clear
+            #!/bin/bash
+ 
+            read -p "Masukkan Username Yang Akan Direnew: " username
+            egrep "^$username" /etc/passwd >/dev/null
+            if [ $? -eq 0 ]; then
+            read -p "Masukkan Tambahan Masa Aktif Account terhitung dari hari ini Hari: " masa_aktif
+
+            today=`date +%s`
+            masa_aktif_detik=$(( $masa_aktif * 86400 ))
+            saat_expired=$(($today + $masa_aktif_detik))
+            tanggal_expired=$(date -u --date="1970-01-01 $saat_expired sec GMT" +%Y/%m/%d)
+            tanggal_expired_display=$(date -u --date="1970-01-01 $saat_expired sec GMT" '+%d %B %Y')
+
+            
+            echo "Menambah Masa Aktif..."
+            sleep 0.5
+            passwd -u $username
+            usermod -e  $tanggal_expired $username
+            egrep "^$username" /etc/passwd >/dev/null
+            echo -e "$password\n$password" | passwd $username
+            echo ""
+            echo "Demikian Detail Account Yang Telah Diperpanjang"
+            echo "---------------------------------------"
+            echo "   Username        : $username"
+            echo "   Masa aktif      : $masa_aktif Hari"
+            echo "   Tanggal Expired : $tanggal_expired_display"
+            echo "--------------------------------------"
+            echo " "
+
+            else
+            echo -e "Username ${red}$username${NC} tidak ditemukan di VPS anda"
+            exit 0
+            fi
+			;;
+        6)
+clear
+		#!/bin/bash
+
+# begin of user-list
+echo ""   
+echo -e "\e[035;1m---------- ALL USER LIST ------------"
+echo -e "\e[033;1mJumlah akun: $JUMLAH user"
+echo -e "\e[033;1m-------------------------------------"
+
+while read expired
+do
+	AKUN="$(echo $expired | cut -d: -f1)"
+	ID="$(echo $expired | grep -v nobody | cut -d: -f3)"
+	exp="$(chage -l $AKUN | grep "Account expires" | awk -F": " '{print $2}')"
+	if [[ $ID -ge 1000 ]]; then
+		printf "%-21s %2s\n" "$AKUN" "$exp"
+	fi
+done < /etc/passwd
+echo -e "\e[033;1m-----------------------------------"
+echo -e "\e[033;1mJumlah akun: $JUMLAH user"
+echo -e "\e[033;1m-----------------------------------"
+echo ""
+# end of user-list
+
+     
+# begin of user-expried
+echo -e "\e[033;1m-----------------------"
+echo -e "\e[033;1mUser Expried list here!  "
+echo -e "\e[033;1m-----------------------"
+cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+	totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+	for((i=1; i<=$totalaccounts; i++ )); do
+		tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+		username=`echo $tuserval | cut -f1 -d:`
+		userexp=`echo $tuserval | cut -f2 -d:`
+		userexpireinseconds=$(( $userexp * 86400 ))
+		todaystime=`date +%s`
+		if [ $userexpireinseconds -lt $todaystime ] ; then
+			echo $username
+		fi
+	done
+	rm /tmp/expirelist.txt
+    
+echo ""
+# end of user-list
+echo -e "\e[0;33;1mType username in user list for remove!"
+echo ""
+read -p "What username do you want delete: " username
+
+egrep "^$username" /etc/passwd >/dev/null
+if [ $? -eq 0 ]; then
+	echo ""
+	read -p "Are you sure want delete username ($username) [y/n]: " -e -i y REMOVE
+	if [[ "$REMOVE" = 'y' ]]; then
+		passwd -l $username
+		userdel $username
+		echo ""
+		echo -e "\e[0;33;1m"
+		echo "Username ($username) was removed success !"
+        echo ""
+	else
+		echo ""
+		echo "Username ($username) was canceled remove!"
+	fi
+else
+	echo "Username ($username) not register in this server!"
+	echo -e "\e[0;33;1m"
+    exit 1
+fi
+;;
+		7)
+		    clear
+	             #!/bin/bash
+
+             echo "===============================================";
+             echo " "
+             echo " "
+
+             if [ -e "/var/log/auth.log" ]; then
+             LOG="/var/log/auth.log";
+             fi
+             if [ -e "/var/log/secure" ]; then
+             LOG="/var/log/secure";
+             fi
+		
+             data=( `ps aux | grep -i dropbear | awk '{print $2}'`);
+             echo "Memerika User Dropbear Yang Login";
+             echo "(ID - Username - IP)";
+             echo "-------------------------------------";
+             cat $LOG | grep -i dropbear | grep -i "Password auth succeeded" > /tmp/login-db.txt;
+             for PID in "${data[@]}"
+             do
+             cat /tmp/login-db.txt | grep "dropbear\[$PID\]" > /tmp/login-db-pid.txt;
+             NUM=`cat /tmp/login-db-pid.txt | wc -l`;
+             USER=`cat /tmp/login-db-pid.txt | awk '{print $10}'`;
+             IP=`cat /tmp/login-db-pid.txt | awk '{print $12}'`;
+             if [ $NUM -eq 1 ]; then
+             echo "$PID - $USER - $IP";
+	         fi
+             done
+             echo " "
+             echo "Memerika User OpenSSH Yang Login";
+             echo "(ID - Username - IP)";
+             echo "-------------------------------------";
+             cat $LOG | grep -i sshd | grep -i "Accepted password for" > /tmp/login-db.txt
+             data=( `ps aux | grep "\[priv\]" | sort -k 72 | awk '{print $2}'`);
+
+             for PID in "${data[@]}"
+             do
+             cat /tmp/login-db.txt | grep "sshd\[$PID\]" > /tmp/login-db-pid.txt;
+             NUM=`cat /tmp/login-db-pid.txt | wc -l`;
+             USER=`cat /tmp/login-db-pid.txt | awk '{print $9}'`;
+             IP=`cat /tmp/login-db-pid.txt | awk '{print $11}'`;
+             if [ $NUM -eq 1 ]; then
+             echo "$PID - $USER - $IP";
+             fi
+             done
+             if [ -f "/etc/openvpn/server-vpn.log" ]; then
+        	 line=`cat /etc/openvpn/server-vpn.log | wc -l`
+             a=$((3+((line-8)/2)))
+             b=$(((line-8)/2))
+	         echo " "
+             echo "Memerika User OpenVPN Yang Login";
+	         echo "(Username - IP - Terkoneksi Sejak)";
+           	 echo "-------------------------------------";
+	         cat /etc/openvpn/server-vpn.log | head -n $a | tail -n $b | cut -d "," -f 1,2,5 | sed -e 's/,/   /g' > /tmp/vpn-login-db.txt
+	         cat /tmp/vpn-login-db.txt
+             fi
+
+             echo " "
+             echo " "
+             echo "===============================================";
+  
+			;;
+		8)
+		    clear
+			             echo -e "${green}Permission Accepted...${NC}"
+             sleep 0.3
+
+
+            if [ ! -e /usr/bin/auto-limit-script ]; then
+            echo 'FATAL ERROR'
+            echo 'Error Code: 404'
+            echo 'Mohon update premium script Anda!'
+            fi
+
+            echo "--------------------------------------------------"
+            echo "Menu Sistem Limit User (Kill Multi Login) otomatis"
+            echo "--------------------------------------------------"
+            echo "1.  Set Auto Kill Multi Login 3 menit sekali"
+            echo "2.  Set Auto Kill Multi Login 5 menit sekali"
+            echo "3.  Set Auto Kill Multi Login 7 menit sekali"
+            echo "4.  Set Auto Kill Multi Login 10 menit sekali"
+            echo "5.  Set Auto Kill Multi Login 15 menit sekali"
+            echo "6.  Set Auto Kill Multi Login 30 menit sekali"
+            echo "7.  Matikan Auto-Limit"
+            echo "8.  Lihat log user yang melakukan multilogin"
+            echo "9.  Hapus log limit"
+            echo "--------------------------------------------------"
+            read -p "Tulis Pilihan Anda (angka): " x
+
+            if (($x<7)); then
+            echo " "
+            echo "--------------------------------------------------"
+            read -p "jumlah multilogin maksimum yang diizinkan: " max
+
+            fi
+            if test $x -eq 1; then
+            echo "*/3 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 3 menit sekali."
+            elif test $x -eq 2; then
+            echo "*/5 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 5 menit sekali."
+            elif test $x -eq 3; then
+            echo "*/7 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 7 menit sekali."
+            elif test $x -eq 4; then
+            echo "*/10 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 10 menit sekali."
+            elif test $x -eq 5; then
+            echo "*/15 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 15 menit sekali."
+            elif test $x -eq 6; then
+            echo "*/30 * * * *  root /usr/local/bin/auto-limit-script $max" > /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil diset 30 menit sekali."
+            elif test $x -eq 7; then
+            rm -f /etc/cron.d/auto-limit-script
+            echo "User-Auto-Limit telah berhasil dimatikan."
+            elif test $x -eq 8; then
+            if [ ! -e /root/log-limit.txt ]; then
+        	echo "Belum ada user yang melakukan multilogin yang terdeteksi"
+        	else 
+        	echo 'Log user yang terdeteksi melakukan multilogin'
+        	echo "-------"
+         	cat /root/log-limit.txt
+            fi
+            elif test $x -eq 9; then
+            echo "" > /root/log-limit.txt
+            echo "Log berhasil dihapus!"
+            else
+            echo "Pilihan Tidak Terdapat Di Menu."
+            exit
+            fi
+            echo ""
+			;;	
+		9)
+		    clear
+#!/bin/bash
+
+if [[ $USER != 'root' ]]; then
+	echo "Maaf, Anda harus menjalankan ini sebagai root"
+	exit
+fi
+
+MYIP=$(wget -qO- ipv4.icanhazip.com)
+
+#vps="zvur";
+vps="freemiumm OpLoverS";
+
+if [[ $vps = "zvur" ]]; then
+	source="http://freemiumm OpLoverS"
+else
+	source="http://freemiumm OpLoverS"
+fi
+
+# go to root
+cd
+
+echo -e "\e[0;35;1m-----------------------------------"
+echo -e "\e[0;35;1mUSERNAME              EXP DATE     "
+echo -e "\e[0;35;1m-----------------------------------"
+
+while read expired
+do
+	AKUN="$(echo $expired | cut -d: -f1)"
+	ID="$(echo $expired | grep -v nobody | cut -d: -f3)"
+	exp="$(chage -l $AKUN | grep "Account expires" | awk -F": " '{print $2}')"
+	if [[ $ID -ge 1000 ]]; then
+		printf "%-21s %2s\n" "$AKUN" "$exp"
+	fi
+done < /etc/passwd
+
+JUMLAH="$(awk -F: '$3 >= 1000 && $1 != "nobody" {print $1}' /etc/passwd | wc -l)"
+
+echo "-----------------------------------"
+echo "Jumlah akun: $JUMLAH user"
+echo "-----------------------------------"
+echo ""
+# begin of user-expried
+echo -e "\e[0;35m-----------------------\e[0;0m"
+echo -e "\e[0;33;1mUser Expried list here!     "
+echo -e "\e[0;35m-----------------------\e[0;0m"
+cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+	totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+	for((i=1; i<=$totalaccounts; i++ )); do
+		tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+		username=`echo $tuserval | cut -f1 -d:`
+		userexp=`echo $tuserval | cut -f2 -d:`
+		userexpireinseconds=$(( $userexp * 86400 ))
+		todaystime=`date +%s`
+		if [ $userexpireinseconds -lt $todaystime ] ; then
+			echo $username
+		fi
+	done
+	rm /tmp/expirelist.txt
+	
+echo ""
+echo -e "\e[0;35;1mBegin to delete user"
+read -p "Adakah Anda Mahu Melakukan Delete User? (y/n): "  DELETE
+ if [[ "$DELETE" = 'y' ]]; then
+read -p "Isikan username yang mahu di Di Delete: " username
+else
+echo -e "\e[0;31mcanceled remove!\e[0;0m"
+exit 1
+fi
+egrep "^$username" /etc/passwd >/dev/null
+if [ $? -eq 0 ]; then
+	echo ""
+	read -p "Are you sure want delete username ($username) [y/n]: " -e -i y REMOVE
+	if [[ "$REMOVE" = 'y' ]]; then
+		passwd -l $username
+		userdel $username
+		echo ""
+		echo -e "\e[0;35mUsername ($username) was removed success !\e[0;0m"
+        echo ""
+	fi
+else
+	echo -e "\e[0;31mUsername ($username) not register in this server!\e[0;0m"
+	exit 1
+fi
+
+cd ~/
+rm -f /root/IP
+            ;;
+        10)
+        clear
+      #!/bin/bash
+
+if [[ $USER != 'root' ]]; then
+	echo "Maaf, Anda harus menjalankan ini sebagai root"
+	exit
+fi
+
+MYIP=$(wget -qO- ipv4.icanhazip.com)
+
+#vps="zvur";
+vps="freemiumm OpLoverS";
+
+if [[ $vps = "zvur" ]]; then
+	source="http://freemiumm OpLoverS"
+else
+	source="http://freemiumm OpLoverS"
+fi
+
+# go to root
+cd
+
+     echo -e "\e[035;1m[====================ooAAAoo=======================]\e[0m"       
+     echo -e "\e[0;33;1m[[SYSTEM CREATED BY AZHAR/FREEMIUMM               ]]\033[0m"
+     echo -e "\e[0;33;1m[[ANY SUGGESTIONS OR COMMENT YOU CAN FOLLOW       ]]\033[0m"
+     echo -e "\e[0;33;1m[[MY FB [https://m.facebook.com/azhar.ahyat]      ]]\033[0m"
+     echo -e "\e[035;1m[===================ooAAAoo========================]\e[0m" 
+
+echo -e "\e[033;1m-----------------------------------"
+while read expired
+do
+	AKUN="$(echo $expired | cut -d: -f1)"
+	ID="$(echo $expired | grep -v nobody | cut -d: -f3)"
+	exp="$(chage -l $AKUN | grep "Account expires" | awk -F": " '{print $2}')"
+	if [[ $ID -ge 1000 ]]; then
+		printf "%-21s %2s\n" "$AKUN" "$exp"
+	fi
+done < /etc/passwd
+echo -e "\e[035;1m-----------------------------------"
+echo -e "\e[0;33;1mTOTAL USER : $JUMLAH ONLINE : $ON OFFLINE : $OFF"
+echo -e "\e[035;1m-----------------------------------"
+echo ""
+# end of user-list
+# begin of user-expried
+echo -e "\e[035;1m-----------------------"
+echo -e "\e[033;1mUser Expried list here!     "
+echo -e "\e[035;1m-----------------------"
+cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+	totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+	for((i=1; i<=$totalaccounts; i++ )); do
+		tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+		username=`echo $tuserval | cut -f1 -d:`
+		userexp=`echo $tuserval | cut -f2 -d:`
+		userexpireinseconds=$(( $userexp * 86400 ))
+		todaystime=`date +%s`
+		if [ $userexpireinseconds -lt $todaystime ] ; then
+			echo $username
+		fi
+	done
+	echo ""
+    read -p "Enter username to renew: " uname
+    egrep "^$uname" /etc/passwd >/dev/null
+	if [ $? -eq 1 ]; then
+	echo "Username [$uname] does not exits!"
+	exit 1
+	else
+    read -p "Enter day expired ( 30 [ for 1 month ] ) : " expdate
+    today="$(date +"%Y-%m-%d")"
+	expire=$(date -d "$expdate days" +"%Y-%m-%d")
+    usermod -e $expire $uname
+echo -e "\e[033;1m============================="
+	echo "Details for you account renew";
+echo -e "\e[033;1m============================="
+	echo "Username : $uname";
+	echo "New Expired Date : $(date -d "$expdate days" +"%d-%m-%Y")";
+	echo "Host/IP: $MYIP"
+echo -e "\e[033;1m============================="
+    fi
+          ;;
+        11)
+               clear
+                  #!/bin/bash
+
+
+               if [ ! -f /usr/local/bin/deleteduser ]; then
+               echo "echo "Script Created By sshinjector.net"" > /usr/local/bin/deleteduser
+               chmod +x /usr/local/bin/deleteduser
+               fi
+               hariini=`date +%d-%m-%Y`
+              
+               echo "--------------------------------------"
+               cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
+               totalaccounts=`cat /tmp/expirelist.txt | wc -l`
+               for((i=1; i<=$totalaccounts; i++ ))
+               do
+               tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
+               username=`echo $tuserval | cut -f1 -d:`
+               userexp=`echo $tuserval | cut -f2 -d:`
+               userexpireinseconds=$(( $userexp * 86400 ))
+               tglexp=`date -d @$userexpireinseconds`             
+               tgl=`echo $tglexp |awk -F" " '{print $3}'`
+               while [ ${#tgl} -lt 2 ]
+               do
+               tgl="0"$tgl
+               done
+               while [ ${#username} -lt 15 ]
+               do
+               username=$username" " 
+               done
+               bulantahun=`echo $tglexp |awk -F" " '{print $2,$6}'`
+               echo "echo "JACK-BLACK-HAT- User : $username Expire Pada Tanggal : $tgl $bulantahun"" >> /usr/local/bin/alluser
+               todaystime=`date +%s`
+               if [ $userexpireinseconds -ge $todaystime ] ;
+               then
+		    	:
+               else
+               echo "echo "JACK-BLACK-HAT- Username : $username sudah expired Pada Tanggal: $tgl $bulantahun dan telah di delete pada tanggal: $hariini "" >> /usr/local/bin/deleteduser
+	           echo "Username $username yang expired pada $tgl $bulantahun telah berhasil dihapus dari sistem pada $hariini"
+               userdel $username
+               fi
+               done
+               echo " "
+               echo "--------------------------------------"
+               echo "Expire User Telah Di Delete"
+	          ;;
+	    12)
+	          clear  
+#!/bin/bash
+echo -e "\e[0;33;1m"
+if [[ $USER != 'root' ]]; then
+	echo "Maaf, Anda harus menjalankan ini sebagai root"
+	exit
+fi
+
+MYIP=$(wget -qO- ipv4.icanhazip.com)
+
+#vps="zvur";
+vps="freemiumm OpLoverS";
+
+if [[ $vps = "zvur" ]]; then
+	source="http://freemiumm OpLoverS"
+else
+	source="http://freemiumm OpLoverS"
+fi
+
+# go to root
+cd
+
+disable-user-expire
+clear
+
+echo ""
+
+cat /root/expireduser.txt
+echo -e "\e[0;33;1m"
+read -p "Mahu Renew User? (y/n): " -e -i
+      
+ read  -p "Mahu Renew?Isikan username: " username
+egrep "^$username" /etc/passwd >/dev/null
+if   [ $? -eq 0 ]; then
+	#read -p "Isikan password akun [$username]: " password
+	read -p "Berapa hari akun [$username] aktif: " AKTIF
+	
+	expiredate=$(chage -l $username | grep "Account expires" | awk -F": " '{print $2}')
+	today=$(date -d "$expiredate" +"%Y-%m-%d")
+	expire=$(date -d "$today + $AKTIF days" +"%Y-%m-%d")
+	chage -E "$expire" $username
+	passwd -u $username
+	#useradd -M -N -s /bin/false -e $expire $username
+
+	echo ""
+	echo -e "\e[0;33;1m-----------------------------------"
+	echo "Data Login:"
+	echo -e "\e[0;33;1m-----------------------------------"
+    echo -e "\e[0;33;1m-----------------------------------"  
+	echo "Username: $username"
+	#echo "Password: $password"
+	echo "Valid s/d: $(date -d "$today + $AKTIF days" +"%d-%m-%Y")"
+	echo -e "\e[0;33;1m-----------------------------------"
+else
+	echo "Username [$username] belum terdaftar!"
+	echo -e "\e[0;33;1m"
+    exit 1
+fi
+cd ~/
+rm -f /root/IP
+              ;;
+             13)
+         clear
+       wget -O /usr/bin/kill "http://jacksalescript.tk/autokilluser"   
+            ;;
+	    14)
+	        clear
+       #!/bin/bash
+
+            read -p "Masukkan Username yang ingin anda kunci: " username
+            egrep "^$username" l/etc/passwd >/dev/null
+            if [ $? -eq 0 ]; then
+            # proses mengganti passwordnya
+            passwd -l $username
+            echo " "
+            echo "-----------------------------------------------"
+            echo -e "Username ${blue}$username${NC} Sudah berhasil di ${red}KUNCI${NC}."
+            echo -e "Akses Login untuk username ${blue}$username${NC} sudah kunci"
+            echo "-----------------------------------------------"
+            else
+            echo "Username tidak ditemukan di server anda"
+            exit 1
+            fi
+			;;
+		15)
+		    clear
+            #!/bin/bash
+            # Uban User.
+            
+            read -p "Masukkan Username yang ingin anda unlock: " username
+            egrep "^$username" /etc/passwd >/dev/null
+            if [ $? -eq 0 ]; then
+            # proses mengganti passwordnya
+            passwd -u $username
+            echo " "
+            echo "-----------------------------------------------"
+            echo -e "Username ${blue}$username${NC} Sudah berhasil di ${green}BUKA KUNCINYA${NC}."
+            echo -e "Akses untuk Username ${blue}$username${NC} sudah dikembalikan"
+            echo "seperti semula"
+            echo "-----------------------------------------------"
+            else
+            echo "Username tidak ditemukan di server anda"
+            exit 1
+            fi
+			;;
+		16)
+		    clear
+		                #!/bin/bash
+            echo "===============================================";
+            echo " ";
+            if [ -e "/root/log-limit.txt" ]; then
+            echo "User yang dikick oleh user-limit adalah";
+            echo "Waktu - Username - Jumlah Multilogin"
+            echo "-------------------------------------";
+            cat /root/log-limit.txt
+            else
+            echo " Tidak ada user yang melakukan pelanggaran"
+            echo " Atau"
+            echo " Script user-limit belum dijalankan"
+            fi
+            echo " ";
+            echo "===============================================";
+			;;
+		17)
+		    clear
+                        #!/bin/bash
+  
+            echo "===============================================";
+            echo " ";
+            if [ -e "/root/log-ban.txt" ]; then
+            echo "User yang diban oleh user-ban adalah";
+            echo "Waktu - Username - Jumlah Multilogin"
+            echo "-------------------------------------";
+            cat /root/log-ban.txt
+            else
+            echo " Tidak ada user yang melakukan pelanggaran"
+            echo " Atau"
+            echo " Script user-ban belum dijalankan"
+            fi
+            echo " ";
+            echo "===============================================";
+              ;;
+		      18)
+	        clear
+                        #!/bin/bash
+
+            if [ -e "/var/lib/premium-script" ]; then
+		    echo "continue..."
+      	    else
+		    mkdir /var/lib/premium-script;
+            fi
+            echo""
+            read -p "Masukkan Username : " username
+            grep -E "^$username" /etc/ppp/chap-secrets >/dev/null
+            if [ $? -eq 0 ]; then
+            echo "Username sudah ada di VPS anda"
+            exit 0
+            else
+            read -p "Masukkan Password : " password
+            read -p "Masukkan Lama Masa Aktif Account Hari: "  masa_aktif
+            today=`date +%s`
+            masa_aktif_detik=$(( $masa_aktif * 86400 ))
+            saat_expired=$(($today + $masa_aktif_detik))
+            tanggal_expired=$(date -u --date="1970-01-01 $saat_expired sec GMT" +%Y/%m/%d)
+            tanggal_expired_display=$(date -u --date="1970-01-01 $saat_expired sec GMT" '+%d %B %Y')
+            
+            echo "Creating Account..."
+            sleep 0.2
+            echo "Generating Host..."
+            sleep 0.2
+            echo "Creating Your New Username: $username"
+            sleep 0.2
+            echo "Creating Password for $username"
+            sleep 0.3
+            MYIP=$(wget -qO- ipv4.icanhazip.com)
+            echo "$username	*	$password	*" >> /etc/ppp/chap-secrets
+            echo "$username *   $password   *  $saat_expired"  >> /var/lib/premium-script/data-user-pptp
+            
+            echo " "
+            echo "Demikian Detail Account Yang Telah Dibuat"
+            echo "---------------------------------------"
+            echo "   Host            : $MYIP"
+            echo "   Username        : $username"
+            echo "   Password        : $password"
+            echo "   Masa aktif      : $masa_aktif Hari"
+            echo "   Tanggal Expired : $tanggal_expired_display"
+            echo "   Dropbear Port   : 80, 109, 110, 443"
+            echo "   OpenSSH Port    : 22 , 143"
+            echo "   Squid Proxy     : 8080, 8000, 3128"
+            echo "   OpenVPN Config  : http://$MYIP:81/client.ovpn"
+            echo "--------------------------------------"
+            echo " "
+            fi
+			;;
+		19)
+		    clear
+                        #!/bin/bash
+            
+            
+            read -p "Masukkan Username yang ingin anda hapus: " username
+            grep -E "^$username" /etc/ppp/chap-secrets >/dev/null
+            if [ $? -eq 0 ]; then
+            # proses mengganti passwordnya
+            username2="/$username/d";
+            sed -i $username2 /etc/ppp/chap-secrets
+            sed -i $username2 /var/lib/premium-script/data-user-pptp
+            sed -i '/^$/d' /etc/ppp/chap-secrets
+            sed -i '/^$/d' /var/lib/premium-script/data-user-pptp
+            echo " "
+            echo "-----------------------------------------------"
+            echo -e "Username ${blue}$username${NC} Sudah berhasil di ${red}HAPUS${NC}."
+            echo -e "Akses Login untuk username ${blue}$username${NC} sudah dihapus"
+            echo "-----------------------------------------------"
+            else
+            echo "Username tidak ditemukan di server anda"
+            exit 1
+            fi
+			;;
+	    20)
+	        clear
+            #!/bin/bash
+       
+            echo""
+            read -p "Masukkan Username yang ingin anda hapus: " username
+            grep -E "^$username" /etc/ppp/chap-secrets >/dev/null
+            if [ $? -eq 0 ]; then
+            # proses mengganti passwordnya
+            username2="/$username/d";
+            sed -i $username2 /etc/ppp/chap-secrets
+            sed -i $username2 /var/lib/premium-script/data-user-pptp
+            sed -i '/^$/d' /etc/ppp/chap-secrets
+            sed -i '/^$/d' /var/lib/premium-script/data-user-pptp
+            echo""
+            echo "Script by jack-team.net"
+            echo "Terima kasih sudah berlangganan di jack-team.net"
+            echo " "
+            echo "-----------------------------------------------"
+            echo -e "Username ${blue}$username${NC} Sudah berhasil di ${red}HAPUS${NC}."
+            echo -e "Akses Login untuk username ${blue}$username${NC} sudah dihapus"
+            echo "-----------------------------------------------"
+            else
+            echo "Username tidak ditemukan di server anda"
+            exit 1
+            fi
+        echo ""
+            ;;
+        21)
+            clear
+       #!/bin/bash
+
+            last | grep ppp | grep still | awk '{print " ",$1," - " $3 }' > /tmp/login-db-pptp.txt;
+            echo "===============================================";
+            echo " "
+            echo " "
+            echo "Memeriksa User PPTP VPN Yang Login";
+            echo "Username - IP ";
+            echo "-------------------------------------";
+            cat /tmp/login-db-pptp.txt
+            echo " "
+            echo " "
+            echo " "
+            echo "==============================================="
+			;;
+		22)
+		    clear
+ echo -e "\e[035;1m-------------------------------------------------------------"
+echo -e "\e[033;1m Date-Time    |    PID   |    User Name    |     Dari IP "
+echo -e "\e[035;1m-------------------------------------------------------------"
+echo -e "\e[031;1m================[ Checking DropBeaR login ]==================="
+data=( `ps aux | grep -i dropbear | awk '{print $2}'`);
+echo -e "\e[033;1m Checking DropBeaR login"
+	for PID in "${data[@]}"
+do
+	#echo "check $PID";
+	NUM=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | wc -l`;
+	USER=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | awk -F" " '{print $10}'`;
+	IP=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | awk -F" " '{print $12}'`;
+	waktu=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | awk -F" " '{print $1,$2,$3}'`;
+	if [ $NUM -eq 1 ]; then
+		echo "$waktu - $PID - $USER - $IP";
+	fi
+done
+
+echo -e "\e[031;1m================[ Checking DropBeaR login ]==================="
+
+echo -e "\e[035;1m]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[[[[[[[[[[[[[[[["
+
+echo -e "\e[031;1m=================[ Checking OpenSSH login ]==================="
+data=( `ps aux | grep "\[priv\]" | sort -k 72 | awk '{print $2}'`);
+echo -e "\e[033;1m Checking OpenSSH Login"
+ for PID in "${data[@]}"
+do
+        #echo "check $PID";
+		NUM=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | wc -l`;
+		USER=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | awk '{print $9}'`;
+		IP=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | awk '{print $11}'`;
+		waktu=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | awk '{print $1,$2,$3}'`;
+        if [ $NUM -eq 1 ]; then
+                echo "$waktu - $PID - $USER - $IP";
+        fi
+done
+echo -e "\e[031;1m================[ Checking OpenSSH login ]===================="
+echo "";
+echo -e "\e[035;1m]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[[[[[[[[[[[[[[[["
+
+echo -e "\e[031;1m=================[ Checking OpenVPN login ]==================="
+echo -e "\e[033;1m$(cat /etc/openvpn/openvpn-status.log)"
+echo -e "\e[031;1m=================[ Checking OpenVPN login ]==================="
+echo "";
+echo -e "\e[035;1m]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[[[[[[[[[[[[[[[["
+
+echo -e "\e[031;1m===================[ Checking PPTP login ]==================="
+echo -e "\e[033;1m Checking PPTP login $JUMLAH user"
+echo -e "\e[031;1m===================[ Checking PPTP login ]==================="
+last | grep ppp | grep still 
+echo "";
+echo -e "\e[035;1m]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[[[[[[[[[[[[[[[["
+
+echo -e "\e[031;1m=============[ Checking PPTP login History ]=================="
+echo -e "\e[033;1mChecking PPTP Login History $JUMLAH user"
+echo -e "\e[031;1m=============[ Checking PPTP login History ]=================="
+last | grep ppp
+echo -e "\e[035;1m]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[[[[[[[[[[[[[[[["
+			;;
+	    23)
+	         clear
+        echo -e "\e[0;36;1m"
+ #!/bin/bash
+red='\e[1;31m'
+green='\e[0;32m'
+NC='\e[0m'
+echo "Connecting To FremiuMM System....."
+sleep 0.1
+if [ ! -e /usr/local/bin/reboot_otomatis ]; then
+echo '#!/bin/bash' > /usr/local/bin/reboot_otomatis 
+echo 'tanggal=$(date +"%m-%d-%Y")' >> /usr/local/bin/reboot_otomatis 
+echo 'waktu=$(date +"%T")' >> /usr/local/bin/reboot_otomatis 
+echo 'echo "Sucsesfully Reboot On $tanggal Time $waktu." >> /root/log-reboot.txt' >> /usr/local/bin/reboot_otomatis 
+echo '/sbin/shutdown -r now' >> /usr/local/bin/reboot_otomatis 
+chmod +x /usr/local/bin/reboot_otomatis
+fi
+
+echo -e "\e[0;31m-------------------------------------------"
+echo -e "\e[0;33;1mAuto Reboot System"
+echo -e "\e[0;31m-------------------------------------------"
+echo -e "\e[0;36;1m1.  Set Auto-Reboot 1 Hour"
+echo -e "\e[0;36;1m2.  Set Auto-Reboot 6 Hour"
+echo -e "\e[0;36;1m3.  Set Auto-Reboot 12 Hour"
+echo -e "\e[0;36;1m4.  Set Auto-Reboot 1 Day"
+echo -e "\e[0;36;1m5.  Set Auto-Reboot 1 Week"
+echo -e "\e[0;36;1m6.  Set Auto-Reboot 1 Month"
+echo -e "\e[0;36;1m7.  Deactivate Auto-Reboot"
+echo -e "\e[0;36;1m8.  See Reboot Log"
+echo -e "\e[0;36;1m9.  Delete Reboot Log"
+echo -e "\e[0;31;1m-------------------------------------------"
+read -p "Please Enter Your Choice From [1-9] : " x
+
+if test $x -eq 1; then
+echo "10 * * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Set By 1 Hour Period"
+elif test $x -eq 2; then
+echo "10 */6 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Set By 6 Hour Period"
+elif test $x -eq 3; then
+echo "10 */12 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Set By 12 Hour Period"
+elif test $x -eq 4; then
+echo "10 0 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Set By 1 Day Period"
+elif test $x -eq 5; then
+echo "10 0 */7 * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Set By 1 Week Period"
+elif test $x -eq 6; then
+echo "10 0 1 * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot telah Sucsesfully Set By 1 Month Period"
+elif test $x -eq 7; then
+rm -f /etc/cron.d/reboot_otomatis
+echo "Auto-Reboot Sucsesfully Deactivated"
+elif test $x -eq 8; then
+if [ ! -e /root/log-reboot.txt ]; then
+echo -e "\e[0;33;1mNo Activity Found"
+	else 
+echo -e "\e[0;33;1mLOG REBOOT"
+echo -e "\e[0;33;1m-------"
+	cat /root/log-reboot.txt
+fi
+elif test $x -eq 9; then
+echo "" > /root/log-reboot.txt
+echo -e "\e[0;33;1mAuto Reboot Log Sucsesfully Deleted!"
+else
+echo -e "\e[0;33;1mYour Choice Canot Found On Menu"
+exit
+fi
+            ;;
+	    24)
+	         clear
+	         #!/bin/bash
+chmod +x speedtest.py
+            echo "Speed Test Server"
+            ./speedtest.py --share
+            echo "Hasil Speed test diatas Script by Jack-BlackHat"
+            ;;
+        25)
+       ps-mem     
+            ;;
+		26)
+		    clear
+            echo "Masukan Port OpenVPN yang diinginkan:"
+            read -p "Port: " -e -i 1194 PORT
+            sed -i "s/port [0-9]*/port $PORT/" /etc/openvpn/1194.conf
+            service openvpn restart
+            echo "OpenVPN Updated : Port $PORT"
+			;;
+		27)
+		    clear
+            echo "Masukan Port Dropbear yang diinginkan:"
+            read -p "Port: " -e -i 443 PORT
+            sed -i "s/DROPBEAR_PORT=[0-9]*/DROPBEAR_PORT=$PORT/" /etc/default/dropbear
+            service dropbear restart
+            echo "Dropbear Updated : Port $PORT"
+			;;
+        28)
+            clear
+            echo "Masukan Port Squid yang diinginkan:"
+            read -p "Port: " -e -i 8080 PORT
+            sed -i "s/http_port [0-9]*/http_port $PORT/" /etc/squid3/squid.conf
+            service squid3 restart
+            echo "echo "Squid3 Updated : Port $PORT""
+			;;			
+        29)
+            clear
+            echo "Service Openvpn restart .................tunggu sebentar"
+            service openvpn restart
+            echo "Restart OpenVPN selesai Script By jackblackhat"
+			;;	
+		30)
+            clear
+            echo "Servie dropbear restart .................tunggu sebentar"
+            service dropbear restart
+            echo "Restart Dropbear selesai Script By Jack-BlackHat"
+            ;;
+		31)
+		    clear
+		    echo "Service Squid restart .................tunggu sebentar"
+			service squid3 restart
+			echo "Restart Squid selesai Script By JackBlatHat"
+			;;
+		32)
+		    clear
+		    /etc/init.d/webmin restart
+		    ;;
+		33)
+		    clear
+            wget freevps.us/downloads/bench.sh -O - -o /dev/null|bash
+           ;;
+        34)
+       passwd
+			;;	
+		35)
+		clear
+		echo "Masukan HOSTNAME VPS, yang mau diganti :"
+            echo "  contoh : " hostname Jack-team
+            ;;   
+		   36)
+		    clear
+			reboot
+            ;;
+        37)
+       clear
+     /usr/local/nmd/nmd
+        ;;
+        38)
+     clear
+service nginx start
+service openvpn restart
+service ssh restart
+service dropbear restart
+service squid3 restart
+service webmin restart
+service php-fpm start
+service vnstat restart
+service snmpd restart
+service ssh restart
+service dropbear restart
+service fail2ban restart
+			;;
+       39)
+ ./pentmenu    
+       ;;
+        x)
+            ;;
+        *) menu;;
+    esac
